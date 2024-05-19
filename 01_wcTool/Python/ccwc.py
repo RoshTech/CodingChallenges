@@ -41,11 +41,9 @@ def get_words_in_file(file):
 def get_chars_in_file(file):
     fileReader = open(file, "rb")
     chars = 0
-    whitespaces = [" ", "\t", "\n", "\v", "\r", "\f"]
     while 1:
-        char = fileReader.read(1)
-        if char not in whitespaces:
-            chars +=1
+        char = fileReader.read()
+        chars += len(char.decode())
         if not char: 
             break
     fileReader.close()
@@ -64,14 +62,9 @@ def help():
 if __name__ == "__main__" :
     argList = sys.argv[1:]
     options = "clwm"
-    longOptions = ["bytes", "lines", "words", "chars"]       
+    longOptions = ["bytes", "lines", "words", "chars"]     
     # print(argList)
-    if len(argList) == 0:
-        help()
-    elif len(argList) == 1 and argList[0] not in options:  
-        print(str(get_lines_in_file(argList[0])) + " " + str(get_words_in_file(argList[0])) + " " +  str(get_bytes_in_file(argList[0])) + " " + argList[0])
-
-    else:
+    if len(argList) >= 2:
         try:
             arguments, values = getopt.getopt(argList, options, longOptions)
 
@@ -86,9 +79,16 @@ if __name__ == "__main__" :
                 elif currentArg in ("-m", "--chars"):
                     print(str(get_chars_in_file(argList[1])) + " " + argList[1])  
                 else:
-                    print('Usage: python3 ccwc.py [OPTIONS] file')
-
-
+                    help()
 
         except getopt.error as err:
             print(str(err))
+            help()
+    elif len(argList) == 1 and argList[0] not in options:  
+        print(str(get_lines_in_file(argList[0])) + " " + str(get_words_in_file(argList[0])) + " " +  str(get_bytes_in_file(argList[0])) + " " + argList[0])
+    elif not argList:
+        content = sys.stdin.buffer.read()
+        print(str(get_lines_in_file(content)) + " " + str(get_words_in_file(content)) + " " +  str(get_bytes_in_file(content)))
+    else: 
+        help()
+
